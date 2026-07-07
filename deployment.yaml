@@ -16,12 +16,9 @@ spec:
     spec:
       containers:
       - name: estadisticas-service
-        image: IMAGEN_MUTABLE
+        image: 605493908341.dkr.ecr.us-east-1.amazonaws.com/estadisticas-service:latest
         ports:
         - containerPort: 8006
-        envFrom:
-        - secretRef:
-            name: casino-secrets
         resources:
           requests:
             cpu: "100m"
