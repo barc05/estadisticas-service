@@ -16,8 +16,7 @@ spec:
     spec:
       containers:
       - name: estadisticas-service
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/estadisticas-service:latest
-        imagePullPolicy: Always
+        image: IMAGEN_MUTABLE
         ports:
         - containerPort: 8006
         envFrom:
