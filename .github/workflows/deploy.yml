@@ -31,15 +31,13 @@ jobs:
     - name: Build, Tag, and Push Image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        ECR_REPOSITORY: estadisticas-service
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        # 1. Compilar usando el Dockerfile multi-stage y no-root que creamos
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:v1.0.0 \
                      -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
                      -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         
-        # 2. Subir simultáneamente las 3 etiquetas a Amazon ECR
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:v1.0.0
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
