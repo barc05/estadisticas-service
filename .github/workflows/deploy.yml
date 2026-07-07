@@ -43,16 +43,16 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
   
-    - name: Update Kubeconfig and Deploy to EKS
-      env:
-        EKS_CLUSTER: ${{ secrets.EKS_CLUSTER }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-        IMAGE_TAG: ${{ github.sha }}
+    - name: Update Kubeconfig for EKS
       run: |
-        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name vidalcasino-cluster
+
+    - name: Deploy Manifests to EKS Cluster
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      run: |
+        sed -i "s/\${AWS_ACCOUNT_ID}/$ECR_REGISTRY/g" deployment.yaml
         
-        sed -i "s|\${AWS_ACCOUNT_ID}.dkr.ecr.\${AWS_REGION}.amazonaws.com/$ECR_REPOSITORY:latest|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s-deployment.yaml
+        kubectl apply -f deployment.yaml
         
-        kubectl apply -f k8s-deployment.yaml
+        kubectl rollout restart deployment/estadisticas-service
